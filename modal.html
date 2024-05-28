@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal with Text Areas</title>
+<style>
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #218838;
+  }
+</style>
+</head>
+<body>
+
+<!-- Button to open the modal -->
+<button id="openModalBtn">Open Modal</button>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Enter Your Details</h2>
+    <label for="keyPoints">Key Points:</label>
+    <textarea id="keyPoints" placeholder="Enter key points here..."></textarea>
+    <label for="code">Code:</label>
+    <textarea id="code" placeholder="Enter code here..."></textarea>
+    <button onclick="submitData()">Submit</button>
+  </div>
+
+</div>
+
+<script>
+// Get modal element
+var modal = document.getElementById("myModal");
+
+// Get open modal button
+var openModalBtn = document.getElementById("openModalBtn");
+
+// Get close button
+var closeModalBtn = document.getElementsByClassName("close")[0];
+
+// Listen for open click
+openModalBtn.addEventListener("click", function() {
+  modal.style.display = "block";
+});
+
+// Listen for close click
+closeModalBtn.addEventListener("click", function() {
+  modal.style.display = "none";
+});
+
+// Listen for outside click
+window.addEventListener("click", function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+});
+
+// Function to handle form submission
+function submitData() {
+  var keyPoints = document.getElementById("keyPoints").value;
+  var code = document.getElementById("code").value;
+
+  // Handle the form data here
+  console.log("Key Points:", keyPoints);
+  console.log("Code:", code);
+
+  // Close the modal after submission
+  modal.style.display = "none";
+}
+</script>
+
+</body>
+</html>
