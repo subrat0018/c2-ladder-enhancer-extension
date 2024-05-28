@@ -33,6 +33,7 @@
         chrome.storage.local.get([user], (result)=>{
             // console.log(rating);
             // console.log("Resul getting: ", result[user])
+            console.log(result);
             if(!result[user][rating]){
                 let notes = Array.from({length: 100}, (_, index)=>({
                     icon: '+',
@@ -54,6 +55,18 @@
             }
         })
     }  
+    const syncUserNotes = ()=>{
+        chrome.storage.local.get([user], (result)=>{
+                let dataToStore = {};
+                let rating_notes = {};
+                rating_notes[rating] = userNotes;
+                dataToStore[user] = {...result[user], ...rating_notes};
+                chrome.storage.local.set(dataToStore, ()=>{
+                    // console.log(dataToStore);
+                    console.log("Data saved successfully");
+                });
+        })
+    }
     const loadNotes = ()=>{
         console.log("Loading Notes....");
         let table_rows = document.querySelector("tbody").children;
@@ -66,9 +79,9 @@
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     if(userNotes[i].value){
-                        console.log(userNotes[i].value);
+                        showViewModal(i);
                     }else{
-                        alert("Hello");
+                        showModal(i);
                     }
                 })
                 table_rows[i].appendChild(temp)
@@ -79,7 +92,88 @@
             }
         }
     }
+    const showModal = async(current_note)=>{
+        const response = await fetch(chrome.runtime.getURL(`modal.html`));
+        const modalHTML = await response.text();
+        let modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHTML;
+        modalContainer.className = "modal";
+        document.body.appendChild(modalContainer);
 
+        modalContainer.style.display = "block";
+        let closeModalBtn = document.getElementsByClassName("close")[0];
+        let submitBtn = document.getElementsByClassName("submit-btn")[0];
+
+
+        // Listen for close click
+        closeModalBtn.addEventListener("click", function() {
+            // modalContainer.style.display = "none";
+            document.body.removeChild(modalContainer);
+        });
+        
+        // Listen for outside click
+        window.addEventListener("click", function(event) {
+            if (event.target === modalContainer) {
+            // modalContainer.style.display = "none";
+            document.body.removeChild(modalContainer);
+            }
+        });
+        submitBtn.addEventListener("click", submitData);
+        // Function to handle form submission
+        function submitData() {
+            var keyPoints = document.getElementById("keyPoints").value;
+        
+            // Handle the form data here
+            console.log("Key Points:", keyPoints);
+        
+            userNotes[current_note].value = keyPoints;
+            userNotes[current_note].icon = "View";
+
+            syncUserNotes();
+            // Close the modal after submission
+            // modalContainer.style.display = "none";
+            document.body.removeChild(modalContainer);
+            loadNotes();
+        }
+    }
+    const showViewModal = async(current_note)=>{
+        const response = await fetch(chrome.runtime.getURL("viewModal.html"));
+        const modalHTML = await response.text();
+        const modalContainer = document.createElement("div");
+        modalContainer.className = "modalContainer";
+        modalContainer.innerHTML = modalHTML;
+        document.body.appendChild(modalContainer);
+
+        modalContainer.style.display = "block";
+        let closeModalBtn = document.getElementsByClassName("close")[0];
+        let editBtn = document.getElementsByClassName("edit-btn")[0];
+        document.getElementsByClassName("current-text")[0].innerHTML = userNotes[current_note].value;
+
+        // Listen for close click
+        closeModalBtn.addEventListener("click", function() {
+            // modalContainer.style.display = "none";
+            document.body.removeChild(modalContainer);
+        });
+        
+        // Listen for outside click
+        window.addEventListener("click", function(event) {
+            if (event.target === modalContainer) {
+            // modalContainer.style.display = "none";
+            document.body.removeChild(modalContainer);
+            }
+        });
+        editBtn.addEventListener("click", async (e)=>{
+            e.preventDefault();
+            const editModal = await fetch(chrome.runtime.getURL(`modal.html`));
+            const editHTML = await editModal.text();
+            modalContainer.innerHTML = editHTML;
+            console.log(editHTML);
+            let editor = document.getElementById("keyPoints");
+            console.log(editor);
+            editor.value = userNotes[current_note].value;
+            editor.innerHTML = editor.value;
+        })
+    }
     // Specify the target node and the configuration options
     let targetNode = document.body;
 
