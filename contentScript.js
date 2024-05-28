@@ -57,19 +57,29 @@
     const loadNotes = ()=>{
         console.log("Loading Notes....");
         let table_rows = document.querySelector("tbody").children;
-        for(let i=0;i<100;i++){
-            temp = document.createElement("td");
-            temp.className = "text-center";
-            temp.innerHTML = `${userNotes[i].icon}`;
-            temp.addEventListener("click",(e)=>{
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                const href = "https://google.com";
-                window.open(href, '_blank');
-            })
-            table_rows[i].appendChild(temp)
+        if(table_rows[0].children.length === 5){
+            for(let i=0;i<100;i++){
+                temp = document.createElement("td");
+                temp.className = "text-center";
+                temp.innerHTML = `${userNotes[i].icon}`;
+                temp.addEventListener("click", (e)=>{
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    if(userNotes[i].value){
+                        console.log(userNotes[i].value);
+                    }else{
+                        alert("Hello");
+                    }
+                })
+                table_rows[i].appendChild(temp)
+            }
+        }else{
+            for(let i=0;i<100;i++){
+                table_rows[i].children[5].innerHTML = `${userNotes[i].icon}`;
+            }
         }
     }
+
     // Specify the target node and the configuration options
     let targetNode = document.body;
 
