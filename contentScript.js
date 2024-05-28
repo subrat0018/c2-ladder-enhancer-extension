@@ -17,10 +17,6 @@
                 new_rating = parseInt(ratingBar[i].innerHTML);
             }
         }
-        // console.log('nu',new_user);
-        // console.log('nr',new_rating);
-        // console.log('u',user);
-        // console.log('r',rating);
         if(new_user && new_rating){
             if(new_user != user || new_rating != rating){
                 user = new_user;
@@ -31,8 +27,6 @@
     })
     const updateNotes = () =>{
         chrome.storage.local.get([user], (result)=>{
-            // console.log(rating);
-            // console.log("Resul getting: ", result[user])
             console.log(result);
             if(!result[user][rating]){
                 let notes = Array.from({length: 100}, (_, index)=>({
@@ -45,7 +39,6 @@
                 rating_notes[rating] = notes;
                 dataToStore[user] = {...result[user], ...rating_notes};
                 chrome.storage.local.set(dataToStore, ()=>{
-                    // console.log(dataToStore);
                     console.log("Data saved successfully");
                 });
             }else{
@@ -105,36 +98,28 @@
         let submitBtn = document.getElementsByClassName("submit-btn")[0];
 
 
-        // Listen for close click
         closeModalBtn.addEventListener("click", function() {
-            // modalContainer.style.display = "none";
             document.body.removeChild(modalContainer);
         });
         
         // Listen for outside click
         window.addEventListener("click", function(event) {
             if (event.target === modalContainer) {
-            // modalContainer.style.display = "none";
             document.body.removeChild(modalContainer);
             }
         });
-        submitBtn.addEventListener("click", submitData);
-        // Function to handle form submission
-        function submitData() {
-            var keyPoints = document.getElementById("keyPoints").value;
-        
-            // Handle the form data here
+        submitBtn.addEventListener("click", ()=>{
+            let keyPoints = document.getElementById("keyPoints").value;
             console.log("Key Points:", keyPoints);
         
             userNotes[current_note].value = keyPoints;
             userNotes[current_note].icon = "View";
 
             syncUserNotes();
-            // Close the modal after submission
-            // modalContainer.style.display = "none";
             document.body.removeChild(modalContainer);
             loadNotes();
-        }
+        });
+
     }
     const showViewModal = async(current_note)=>{
         const response = await fetch(chrome.runtime.getURL("viewModal.html"));
@@ -149,16 +134,12 @@
         let editBtn = document.getElementsByClassName("edit-btn")[0];
         document.getElementsByClassName("current-text")[0].innerHTML = userNotes[current_note].value;
 
-        // Listen for close click
         closeModalBtn.addEventListener("click", function() {
-            // modalContainer.style.display = "none";
             document.body.removeChild(modalContainer);
         });
         
-        // Listen for outside click
         window.addEventListener("click", function(event) {
             if (event.target === modalContainer) {
-            // modalContainer.style.display = "none";
             document.body.removeChild(modalContainer);
             }
         });
@@ -167,14 +148,29 @@
             const editModal = await fetch(chrome.runtime.getURL(`modal.html`));
             const editHTML = await editModal.text();
             modalContainer.innerHTML = editHTML;
-            console.log(editHTML);
             let editor = document.getElementById("keyPoints");
-            console.log(editor);
             editor.value = userNotes[current_note].value;
             editor.innerHTML = editor.value;
+            let closeModalBtn = document.getElementsByClassName("close")[0];
+            let submitBtn = document.getElementsByClassName("submit-btn")[0];
+
+
+            closeModalBtn.addEventListener("click", function() {
+                document.body.removeChild(modalContainer);
+            });
+            submitBtn.addEventListener("click", ()=>{
+                let keyPoints = document.getElementById("keyPoints").value;
+                console.log("Key Points:", keyPoints);
+            
+                userNotes[current_note].value = keyPoints;
+                userNotes[current_note].icon = "View";
+    
+                syncUserNotes();
+                document.body.removeChild(modalContainer);
+                loadNotes();
+            });
         })
     }
-    // Specify the target node and the configuration options
     let targetNode = document.body;
 
     // The configuration object must be structured properly
